@@ -1,0 +1,33 @@
+{
+  "base_learners": {
+    "MLP": {
+      "MAE": 3.9671,
+      "RMSE": 8.2513
+    },
+    "LSVR": {
+      "MAE": 4.8526,
+      "RMSE": 8.8357
+    },
+    "RF": {
+      "MAE": 3.9876,
+      "RMSE": 8.6981
+    },
+    "LSTM": {
+      "MAE": 4.2221,
+      "RMSE": 8.9238
+    }
+  },
+  "ensemble": {
+    "MAE": 3.7739,
+    "RMSE": 8.0838
+  },
+  "meta_learner": {
+    "coefficients": {
+      "MLP": 0.6365,
+      "LSVR": -0.1347,
+      "RF": 0.4541,
+      "LSTM": 0.1062
+    },
+    "intercept": -0.2885
+  }
+}
