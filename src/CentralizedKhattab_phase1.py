@@ -369,7 +369,7 @@ def main():
     print("=" * 60)
 
     # -- 7. Save artifacts ---------------------------------------
-    print(f"\n  Saving artifacts to {BASELINE_MODEL_DIR} ...")
+    print(f"\n  Saving artifacts to {PHASE1_MODEL_DIR} ...")
 
     joblib.dump(trained_sklearn["MLP"], MLP_PATH)
     print(f"    [+] {MLP_PATH.name}")
@@ -396,7 +396,7 @@ def main():
     print("=" * 60)
     print(f"  Ensemble MAE:  {ens_mae:.4f}")
     print(f"  Ensemble RMSE: {ens_rmse:.4f}")
-    print(f"  Artifacts:     {BASELINE_MODEL_DIR}")
+    print(f"  Artifacts:     {PHASE1_MODEL_DIR}")
     print("=" * 60)
 
 
