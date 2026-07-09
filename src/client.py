@@ -33,7 +33,7 @@ from config import (
     TFIDF_VECTORIZER_PATH,
     MAX_TFIDF_FEATURES,
 )
-from src.train_baseline import get_sklearn_base_learners, build_keras_lstm, sparse_to_dense_f32
+from src.CentralizedKhattab_phase1 import get_sklearn_base_learners, build_keras_lstm, sparse_to_dense_f32
 
 class FLClient(fl.client.NumPyClient):
     def __init__(self, client_id):

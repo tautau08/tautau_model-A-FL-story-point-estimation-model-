@@ -1,0 +1,30 @@
+{
+  "rounds": {
+    "INIT": {
+      "MAE": 4.3638,
+      "RMSE": 10.4266
+    },
+    "R1": {
+      "MAE": 4.6194,
+      "RMSE": 10.6933
+    },
+    "R2": {
+      "MAE": 5.3864,
+      "RMSE": 11.1662
+    },
+    "R3": {
+      "MAE": 5.0967,
+      "RMSE": 11.0293
+    }
+  },
+  "final_ensemble": {
+    "MAE": 5.0967,
+    "RMSE": 11.0293
+  },
+  "client_drift_vs_phase1": {
+    "MAE_delta": 1.3228,
+    "MAE_degradation_pct": 35.1,
+    "RMSE_delta": 2.9455,
+    "RMSE_degradation_pct": 36.4
+  }
+}

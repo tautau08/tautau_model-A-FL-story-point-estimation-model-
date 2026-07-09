@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 
 Write-Host ""
 Write-Host "============================================================"
-Write-Host " Phase 2 -- Federated Learning Orchestration"
+Write-Host " Phase 3 -- Federated Learning Orchestration (FedProx)"
 Write-Host "============================================================"
 
 # 1. Partition Data
@@ -21,7 +21,7 @@ try {
     # 2. Start Server
     Write-Host ""
     Write-Host "  [Step 2] Starting FL server (port 8080) ..."
-    $serverJob = Start-Process -FilePath ".venv\Scripts\python.exe" -ArgumentList "src/server.py" -PassThru -NoNewWindow -RedirectStandardError "NUL"
+    $serverJob = Start-Process -FilePath ".venv\Scripts\python.exe" -ArgumentList "src/server_phase3.py" -PassThru -NoNewWindow -RedirectStandardError "NUL"
     Start-Sleep -Seconds 5
 
     # 3. Start 16 Clients with 3-second staggers
@@ -35,7 +35,7 @@ try {
     }
 
     Write-Host ""
-    Write-Host "  [Step 4] All clients connected. Running 3 federation rounds ..."
+    Write-Host "  [Step 4] All clients connected. Running 10 federation rounds ..."
     Write-Host "           (Server evaluation will appear below)"
     Write-Host ""
     Wait-Process -Id $serverJob.Id -ErrorAction SilentlyContinue

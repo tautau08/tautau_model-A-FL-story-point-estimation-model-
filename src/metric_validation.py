@@ -25,7 +25,7 @@ from config import (
     META_LEARNER_PATH,
 )
 
-from src.train_baseline import sparse_to_dense_f32
+from src.CentralizedKhattab_phase1 import sparse_to_dense_f32
 
 def main():
     print("=" * 60)

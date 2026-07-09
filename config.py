@@ -15,11 +15,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 RAW_DATA_DIR       = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
 FEATURES_DIR       = PROJECT_ROOT / "data" / "features"
-BASELINE_MODEL_DIR = PROJECT_ROOT / "models" / "baseline"
+PHASE1_MODEL_DIR   = PROJECT_ROOT / "models" / "phase1_khattab"
+PHASE2_MODEL_DIR   = PROJECT_ROOT / "models" / "phase2_basic_fl"
+PHASE3_MODEL_DIR   = PROJECT_ROOT / "models" / "phase3_fedprox"
 FEDERATED_DATA_DIR = PROJECT_ROOT / "data" / "federated"
 
 # Ensure directories exist on import
-for _dir in (RAW_DATA_DIR, PROCESSED_DATA_DIR, FEATURES_DIR, BASELINE_MODEL_DIR, FEDERATED_DATA_DIR):
+for _dir in (RAW_DATA_DIR, PROCESSED_DATA_DIR, FEATURES_DIR, PHASE1_MODEL_DIR, PHASE2_MODEL_DIR, PHASE3_MODEL_DIR, FEDERATED_DATA_DIR):
     _dir.mkdir(parents=True, exist_ok=True)
 
 # ============================================================
@@ -86,9 +88,20 @@ SPLIT_KEYS_TEST_PATH  = FEATURES_DIR / "keys_test.joblib"
 # ============================================================
 # Baseline Model Artifact Paths
 # ============================================================
-MLP_PATH              = BASELINE_MODEL_DIR / "mlp_regressor.joblib"
-LSVR_PATH             = BASELINE_MODEL_DIR / "linear_svr.joblib"
-RF_PATH               = BASELINE_MODEL_DIR / "random_forest.joblib"
-LSTM_MODEL_PATH       = BASELINE_MODEL_DIR / "lstm_model.keras"
-META_LEARNER_PATH     = BASELINE_MODEL_DIR / "meta_learner.joblib"
-BASELINE_METRICS_PATH = BASELINE_MODEL_DIR / "baseline_metrics.json"
+MLP_PATH              = PHASE1_MODEL_DIR / "mlp_regressor.joblib"
+LSVR_PATH             = PHASE1_MODEL_DIR / "linear_svr.joblib"
+RF_PATH               = PHASE1_MODEL_DIR / "random_forest.joblib"
+LSTM_MODEL_PATH       = PHASE1_MODEL_DIR / "lstm_model.keras"
+META_LEARNER_PATH     = PHASE1_MODEL_DIR / "meta_learner.joblib"
+BASELINE_METRICS_PATH = PHASE1_MODEL_DIR / "baseline_metrics.json"
+
+# ============================================================
+# Federated Model Artifact Paths
+# ============================================================
+FEDAVG_MLP_PATH       = PHASE2_MODEL_DIR / "global_mlp.joblib"
+FEDAVG_LSTM_PATH      = PHASE2_MODEL_DIR / "global_lstm.keras"
+PHASE2_METRICS_PATH   = PHASE2_MODEL_DIR / "phase2_metrics.json"
+
+FEDPROX_MLP_PATH      = PHASE3_MODEL_DIR / "global_mlp.joblib"
+FEDPROX_LSTM_PATH     = PHASE3_MODEL_DIR / "global_lstm.keras"
+PHASE3_METRICS_PATH   = PHASE3_MODEL_DIR / "phase3_metrics.json"

@@ -56,7 +56,7 @@ from config import (
     LSTM_MODEL_PATH,
     META_LEARNER_PATH,
     BASELINE_METRICS_PATH,
-    BASELINE_MODEL_DIR,
+    PHASE1_MODEL_DIR,
 )
 
 # ================================================================

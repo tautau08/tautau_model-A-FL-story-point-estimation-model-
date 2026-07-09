@@ -1,5 +1,5 @@
 """
-server.py -- Flower server orchestrator for Phase 2 FL Baseline.
+server.py -- Flower server orchestrator for Phase 3 (FedProx).
 
 Initializes `FedAvg` with explicit initial_parameters, runs for 3 rounds,
 and evaluates the aggregated global weights for the continuous models
@@ -9,6 +9,7 @@ and evaluates the aggregated global weights for the continuous models
 import sys
 import os
 import logging
+import json
 from pathlib import Path
 import warnings
 
@@ -31,8 +32,11 @@ from config import (
     X_TEST_PATH,
     Y_TEST_PATH,
     MAX_TFIDF_FEATURES,
+    FEDPROX_MLP_PATH,
+    FEDPROX_LSTM_PATH,
+    PHASE3_METRICS_PATH,
 )
-from src.train_baseline import get_sklearn_base_learners, build_keras_lstm, sparse_to_dense_f32
+from src.CentralizedKhattab_phase1 import get_sklearn_base_learners, build_keras_lstm, sparse_to_dense_f32
 
 
 def _extract_initial_parameters(mlp, lstm):
@@ -101,7 +105,7 @@ def get_evaluate_fn(mlp, lstm):
 def main():
     print("=" * 60)
     print(" Federated Agile Effort Estimation")
-    print(" Phase 2 -- Flower Server (FedAvg)")
+    print(" Phase 3 -- Flower Server (FedProx)")
     print("=" * 60)
 
     # ---- Build models on the server side for shape init ----
@@ -119,17 +123,19 @@ def main():
     total_params = sum(p.size for p in init_params)
     print(f"         {len(init_params)} arrays, {total_params:,} total parameters")
 
-    # ---- Configure FedAvg ----
-    print("  [2/4] Configuring FedAvg strategy ...")
-    print("         fraction_fit=0.19 (~3 clients/round)")
+    # ---- Configure FedProx ----
+    print("  [2/4] Configuring FedProx strategy ...")
+    print("         fraction_fit=0.5 (8 clients/round)")
+    print("         proximal_mu=0.1")
     print("         min_available_clients=16")
 
-    strategy = fl.server.strategy.FedAvg(
-        fraction_fit=0.19,
-        fraction_evaluate=0.19,
-        min_fit_clients=3,
-        min_evaluate_clients=3,
+    strategy = fl.server.strategy.FedProx(
+        fraction_fit=0.5,
+        fraction_evaluate=0.5,
+        min_fit_clients=8,
+        min_evaluate_clients=8,
         min_available_clients=16,
+        proximal_mu=0.1,
         evaluate_fn=get_evaluate_fn(mlp, lstm),
         initial_parameters=fl.common.ndarrays_to_parameters(init_params),
     )
@@ -140,14 +146,14 @@ def main():
 
     fl.server.start_server(
         server_address="0.0.0.0:8080",
-        config=fl.server.ServerConfig(num_rounds=3),
+        config=fl.server.ServerConfig(num_rounds=10),
         strategy=strategy,
     )
 
     # ---- Print Final Summary ----
     print("\n  [4/4] Simulation complete!")
     print("\n" + "=" * 60)
-    print(" Phase 2 Results Summary")
+    print(" Phase 3 Results Summary")
     print("=" * 60)
     print(f"  {'Round':<8s} {'MAE':>10s} {'RMSE':>10s}")
     print(f"  {'-'*8:<8s} {'-'*10:>10s} {'-'*10:>10s}")
@@ -168,6 +174,30 @@ def main():
         print(f"\n  Client Drift (Final Round vs Phase 1):")
         print(f"    MAE  delta: {delta_mae:+.4f} ({pct_mae:+.1f}%)")
         print(f"    RMSE delta: {delta_rmse:+.4f} ({pct_rmse:+.1f}%)")
+        
+        # ---- Save Metrics to JSON ----
+        metrics_dict = {
+            "rounds": {},
+            "final_ensemble": {"MAE": final_mae, "RMSE": final_rmse},
+            "client_drift_vs_phase1": {
+                "MAE_delta": delta_mae,
+                "MAE_degradation_pct": pct_mae,
+                "RMSE_delta": delta_rmse,
+                "RMSE_degradation_pct": pct_rmse
+            }
+        }
+        for label, m, r in _round_results:
+            metrics_dict["rounds"][label] = {"MAE": m, "RMSE": r}
+            
+        with open(PHASE3_METRICS_PATH, "w") as f:
+            json.dump(metrics_dict, f, indent=2)
+            
+    # ---- Save Models ----
+    print("\n  [5/5] Saving Phase 3 global models to disk ...")
+    joblib.dump(mlp, FEDPROX_MLP_PATH)
+    lstm.save(FEDPROX_LSTM_PATH)
+    print(f"         Saved MLP to {FEDPROX_MLP_PATH.name}")
+    print(f"         Saved LSTM to {FEDPROX_LSTM_PATH.name}")
     print("=" * 60)
 
 
