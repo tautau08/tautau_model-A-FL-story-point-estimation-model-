@@ -117,7 +117,7 @@ def main():
     args = parser.parse_args()
     
     client = FLClient(args.client_id)
-    fl.client.start_client(server_address="127.0.0.1:8080", client=client.to_client())
+    fl.client.start_client(server_address="127.0.0.1:8082", client=client.to_client())
 
 if __name__ == "__main__":
     main()

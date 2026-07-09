@@ -70,7 +70,7 @@ def main() -> None:
 
     try:
         # Step 2 – Start FL server (background) -------------------------
-        _log("[Step 2] Starting FL server (port 8080) ...")
+        _log("[Step 2] Starting FL server (port 8082) ...")
         server_proc = subprocess.Popen(
             [PYTHON, "src/server_phase3.py"],
             stdout=sys.stdout,
