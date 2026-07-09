@@ -11,7 +11,7 @@ joblib>=1.4
 tensorflow>=2.16
 
 # Federated Learning framework (Phase 2, installed now)
-flwr>=1.8
+flwr[simulation]>=1.8
 
 # Data acquisition
 requests>=2.32

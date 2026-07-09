@@ -2,10 +2,15 @@
 client.py -- Flower client for Phase 3 Federated Learning (FedProx).
 
 Memory-efficient implementation: data is loaded on-demand inside fit() and
-evaluate(), then immediately released.  This prevents 16 concurrent clients
-from exceeding Colab's 11.3 GB system RAM limit.
+evaluate(), then immediately released.
 
-Usage:
+Supports two execution modes:
+  1. Simulation (Colab):  via client_fn() factory — called by
+     fl.simulation.start_simulation() in simulate_phase3.py
+  2. Standalone (Windows): via main() — launched as a separate process
+     by run_phase3.ps1
+
+Usage (standalone):
     python src/client.py --client_id 0
 """
 
@@ -99,8 +104,7 @@ class FLClient(fl.client.NumPyClient):
         return X_sparse, X_dense, y
 
     def _release_memory(self):
-        """Force Python + TF to release memory back to the OS."""
-        tf.keras.backend.clear_session()
+        """Free data arrays and trigger garbage collection."""
         gc.collect()
 
     # ------------------------------------------------------------------
@@ -167,7 +171,31 @@ class FLClient(fl.client.NumPyClient):
         return float(rmse), n_samples, {"mae": float(mae), "rmse": float(rmse)}
 
 
+# ======================================================================
+# Simulation factory (used by src/simulate_phase3.py)
+# ======================================================================
+
+def client_fn(cid: str) -> fl.client.Client:
+    """Factory function for Flower's simulation engine.
+
+    Creates a fresh FLClient for the given client ID.  Called on-demand
+    by the simulation engine — clients are not kept alive between rounds,
+    so memory is naturally reclaimed after each fit()/evaluate() cycle.
+    """
+    return FLClient(cid).to_client()
+
+
+# ======================================================================
+# Standalone mode (used by run_phase3.ps1 on Windows)
+# ======================================================================
+
 def main():
+    """Launch a single FL client as a standalone process.
+
+    This mode is used by the Windows multi-process launcher (run_phase3.ps1).
+    For Colab, use simulate_phase3.py instead — it avoids the 17-process
+    overhead that exceeds Colab's 12.7 GB system RAM limit.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--client_id", type=str, required=True)
     args = parser.parse_args()
