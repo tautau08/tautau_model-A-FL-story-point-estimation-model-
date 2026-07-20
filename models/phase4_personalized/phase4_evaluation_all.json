@@ -1,0 +1,121 @@
+{
+  "macro_mae": 3.6844157697337288,
+  "macro_rmse": 5.508462541354984,
+  "weighted_mae": 4.371790440510537,
+  "weighted_rmse": 6.7492041155404445,
+  "total_test_samples": 4671,
+  "client_results": [
+    {
+      "client_id": 0,
+      "project_name": "appceleratorstudio",
+      "n_samples": 584,
+      "mae": 2.4058198456199147,
+      "rmse": 3.4583489281560067
+    },
+    {
+      "client_id": 1,
+      "project_name": "aptanastudio",
+      "n_samples": 166,
+      "mae": 3.7728066300321847,
+      "rmse": 5.356046928868314
+    },
+    {
+      "client_id": 2,
+      "project_name": "bamboo",
+      "n_samples": 105,
+      "mae": 1.2677035745198109,
+      "rmse": 2.1260005215306603
+    },
+    {
+      "client_id": 3,
+      "project_name": "clover",
+      "n_samples": 77,
+      "mae": 3.970786630976314,
+      "rmse": 6.90525354839407
+    },
+    {
+      "client_id": 4,
+      "project_name": "datamanagement",
+      "n_samples": 934,
+      "mae": 8.38892807473058,
+      "rmse": 14.218412676107887
+    },
+    {
+      "client_id": 5,
+      "project_name": "duracloud",
+      "n_samples": 134,
+      "mae": 1.247108126788402,
+      "rmse": 1.5947467410025555
+    },
+    {
+      "client_id": 6,
+      "project_name": "jirasoftware",
+      "n_samples": 71,
+      "mae": 2.8138231174064448,
+      "rmse": 3.600551935055432
+    },
+    {
+      "client_id": 7,
+      "project_name": "mesos",
+      "n_samples": 336,
+      "mae": 1.5742363671628343,
+      "rmse": 2.8829800317786987
+    },
+    {
+      "client_id": 8,
+      "project_name": "moodle",
+      "n_samples": 234,
+      "mae": 14.798631205555688,
+      "rmse": 22.36572104927791
+    },
+    {
+      "client_id": 9,
+      "project_name": "mule",
+      "n_samples": 178,
+      "mae": 2.5497354493413997,
+      "rmse": 3.548639690000599
+    },
+    {
+      "client_id": 10,
+      "project_name": "mulestudio",
+      "n_samples": 147,
+      "mae": 4.96834038863105,
+      "rmse": 6.3174860148543805
+    },
+    {
+      "client_id": 11,
+      "project_name": "springxd",
+      "n_samples": 706,
+      "mae": 2.7531965645710574,
+      "rmse": 3.475304194027227
+    },
+    {
+      "client_id": 12,
+      "project_name": "talenddataquality",
+      "n_samples": 277,
+      "mae": 3.4134571870328507,
+      "rmse": 4.717406722814548
+    },
+    {
+      "client_id": 13,
+      "project_name": "talendesb",
+      "n_samples": 174,
+      "mae": 0.9155854327530648,
+      "rmse": 1.3018663512194948
+    },
+    {
+      "client_id": 14,
+      "project_name": "titanium",
+      "n_samples": 451,
+      "mae": 3.1779661553423564,
+      "rmse": 4.9582555675091005
+    },
+    {
+      "client_id": 15,
+      "project_name": "usergrid",
+      "n_samples": 97,
+      "mae": 0.9325275652757077,
+      "rmse": 1.3083797610828634
+    }
+  ]
+}

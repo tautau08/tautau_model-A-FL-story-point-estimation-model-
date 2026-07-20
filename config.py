@@ -105,3 +105,13 @@ PHASE2_METRICS_PATH   = PHASE2_MODEL_DIR / "phase2_metrics.json"
 FEDPROX_MLP_PATH      = PHASE3_MODEL_DIR / "global_mlp.joblib"
 FEDPROX_LSTM_PATH     = PHASE3_MODEL_DIR / "global_lstm.keras"
 PHASE3_METRICS_PATH   = PHASE3_MODEL_DIR / "phase3_metrics.json"
+
+# ============================================================
+# Phase 4: Personalized Federated Ensemble (Split-Federation)
+# ============================================================
+PHASE4_MODEL_DIR      = PROJECT_ROOT / "models" / "phase4_personalized"
+PHASE4_GLOBAL_MLP_PATH  = PHASE4_MODEL_DIR / "global_mlp.keras"
+PHASE4_GLOBAL_LSTM_PATH = PHASE4_MODEL_DIR / "global_lstm.keras"
+PHASE4_METRICS_PATH     = PHASE4_MODEL_DIR / "phase4_metrics.json"
+
+PHASE4_MODEL_DIR.mkdir(parents=True, exist_ok=True)
