@@ -109,7 +109,9 @@ def main():
         y_scaler = joblib.load(scaler_path)
 
         y_pred_scaled = ensemble.predict(X_embeddings)
-        y_pred_raw = y_scaler.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten()
+        # [Phase 5] y_scaler now operates in log1p space -- invert scale, then expm1.
+        y_pred_log = y_scaler.inverse_transform(y_pred_scaled.reshape(-1, 1)).flatten()
+        y_pred_raw = np.clip(np.expm1(y_pred_log), 1.0, None)
 
         # Compute Metrics
         mae = mean_absolute_error(y_test_raw, y_pred_raw)

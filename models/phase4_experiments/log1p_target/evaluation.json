@@ -1,0 +1,157 @@
+{
+  "macro_mae_baseline": 3.6844157697337288,
+  "macro_rmse_baseline": 5.508462541354984,
+  "macro_mae_log1p": 3.0032268471095342,
+  "macro_rmse_log1p": 5.364950930340856,
+  "weighted_mae_baseline": 4.371790440510537,
+  "weighted_rmse_baseline": 6.7492041155404445,
+  "weighted_mae_log1p": 3.518405993944553,
+  "weighted_rmse_log1p": 6.61221697882597,
+  "total_test_samples": 4671,
+  "client_results": [
+    {
+      "client_id": 0,
+      "project_name": "appceleratorstudio",
+      "n_samples": 584,
+      "mae_baseline": 2.4058198456199147,
+      "rmse_baseline": 3.4583489281560067,
+      "mae_log1p": 2.104038446924656,
+      "rmse_log1p": 3.279140819375329
+    },
+    {
+      "client_id": 1,
+      "project_name": "aptanastudio",
+      "n_samples": 166,
+      "mae_baseline": 3.7728066300321847,
+      "rmse_baseline": 5.356046928868314,
+      "mae_log1p": 3.679083961918902,
+      "rmse_log1p": 5.351360930386416
+    },
+    {
+      "client_id": 2,
+      "project_name": "bamboo",
+      "n_samples": 105,
+      "mae_baseline": 1.2677035745198109,
+      "rmse_baseline": 2.1260005215306603,
+      "mae_log1p": 1.1007527969427477,
+      "rmse_log1p": 2.178140651619798
+    },
+    {
+      "client_id": 3,
+      "project_name": "clover",
+      "n_samples": 77,
+      "mae_baseline": 3.970786630976314,
+      "rmse_baseline": 6.90525354839407,
+      "mae_log1p": 3.4743085541305834,
+      "rmse_log1p": 7.1319248501815
+    },
+    {
+      "client_id": 4,
+      "project_name": "datamanagement",
+      "n_samples": 934,
+      "mae_baseline": 8.38892807473058,
+      "rmse_baseline": 14.218412676107887,
+      "mae_log1p": 6.5008712442218055,
+      "rmse_log1p": 14.31644230809247
+    },
+    {
+      "client_id": 5,
+      "project_name": "duracloud",
+      "n_samples": 134,
+      "mae_baseline": 1.247108126788402,
+      "rmse_baseline": 1.5947467410025555,
+      "mae_log1p": 0.8808215321217135,
+      "rmse_log1p": 1.3671227581085386
+    },
+    {
+      "client_id": 6,
+      "project_name": "jirasoftware",
+      "n_samples": 71,
+      "mae_baseline": 2.8138231174064448,
+      "rmse_baseline": 3.600551935055432,
+      "mae_log1p": 2.0113910523677547,
+      "rmse_log1p": 3.1458356587686174
+    },
+    {
+      "client_id": 7,
+      "project_name": "mesos",
+      "n_samples": 336,
+      "mae_baseline": 1.5742363671628343,
+      "rmse_baseline": 2.8829800317786987,
+      "mae_log1p": 1.5030922637674422,
+      "rmse_log1p": 2.879875659402247
+    },
+    {
+      "client_id": 8,
+      "project_name": "moodle",
+      "n_samples": 234,
+      "mae_baseline": 14.798631205555688,
+      "rmse_baseline": 22.36572104927791,
+      "mae_log1p": 11.217606189933226,
+      "rmse_log1p": 22.230890087497144
+    },
+    {
+      "client_id": 9,
+      "project_name": "mule",
+      "n_samples": 178,
+      "mae_baseline": 2.5497354493413997,
+      "rmse_baseline": 3.548639690000599,
+      "mae_log1p": 2.558261230338535,
+      "rmse_log1p": 3.619052372046518
+    },
+    {
+      "client_id": 10,
+      "project_name": "mulestudio",
+      "n_samples": 147,
+      "mae_baseline": 4.96834038863105,
+      "rmse_baseline": 6.3174860148543805,
+      "mae_log1p": 3.2104806944659594,
+      "rmse_log1p": 5.207927330990193
+    },
+    {
+      "client_id": 11,
+      "project_name": "springxd",
+      "n_samples": 706,
+      "mae_baseline": 2.7531965645710574,
+      "rmse_baseline": 3.475304194027227,
+      "mae_log1p": 1.8893041063475107,
+      "rmse_log1p": 2.9354578092402983
+    },
+    {
+      "client_id": 12,
+      "project_name": "talenddataquality",
+      "n_samples": 277,
+      "mae_baseline": 3.4134571870328507,
+      "rmse_baseline": 4.717406722814548,
+      "mae_log1p": 3.0042614309327824,
+      "rmse_log1p": 4.66282254391315
+    },
+    {
+      "client_id": 13,
+      "project_name": "talendesb",
+      "n_samples": 174,
+      "mae_baseline": 0.9155854327530648,
+      "rmse_baseline": 1.3018663512194948,
+      "mae_log1p": 0.8806949277313307,
+      "rmse_log1p": 1.3026463775136763
+    },
+    {
+      "client_id": 14,
+      "project_name": "titanium",
+      "n_samples": 451,
+      "mae_baseline": 3.1779661553423564,
+      "rmse_baseline": 4.9582555675091005,
+      "mae_log1p": 3.1388091546099894,
+      "rmse_log1p": 4.948779824576573
+    },
+    {
+      "client_id": 15,
+      "project_name": "usergrid",
+      "n_samples": 97,
+      "mae_baseline": 0.9325275652757077,
+      "rmse_baseline": 1.3083797610828634,
+      "mae_log1p": 0.8978519669976126,
+      "rmse_log1p": 1.281794903741235
+    }
+  ]
+}
