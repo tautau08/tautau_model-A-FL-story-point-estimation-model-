@@ -138,16 +138,39 @@ class FLClient(fl.client.NumPyClient):
         return tf.keras.Model(inputs=inp, outputs=x)
 
     def _fit_y_scaler(self):
-        """Fit StandardScaler on training y values for this client."""
+        """Fit StandardScaler on log1p(training y) for this client.
+
+        [Phase 5 — Outlier-Aware Target Transform] Raw StandardScaler (mean/std)
+        assumes a roughly symmetric distribution. Several clients (e.g. moodle,
+        datamanagement) have heavy right-tailed, near-continuous story-point
+        distributions where a few high-effort tickets dominate the mean/std,
+        which destabilizes both FedProx training and the local ensemble fit.
+        log1p compresses that tail multiplicatively (without discarding any
+        training example) before the z-score is computed; see
+        src/retrain_local_ensembles_log1p.py for the validated ablation and
+        worktracker.md Phase 5 for the before/after results.
+        """
         if self.scaler_path.exists():
             self.y_scaler = joblib.load(self.scaler_path)
         else:
             df = pd.read_csv(self.train_path)
-            y = df["storypoint"].values.reshape(-1, 1)
-            self.y_scaler.fit(y)
+            y_raw = df["storypoint"].values.reshape(-1, 1)
+            y_log = np.log1p(np.clip(y_raw, a_min=0.0, a_max=None))
+            self.y_scaler.fit(y_log)
             joblib.dump(self.y_scaler, self.scaler_path)
-            del df, y
+            del df, y_raw, y_log
             gc.collect()
+
+    def _transform_y(self, y_raw):
+        """[Phase 5] raw story points -> log1p -> per-client z-score."""
+        y_log = np.log1p(np.clip(y_raw, a_min=0.0, a_max=None))
+        return self.y_scaler.transform(y_log.reshape(-1, 1)).flatten()
+
+    def _inverse_transform_y(self, y_scaled):
+        """[Phase 5] per-client z-score -> log1p -> raw story points (clipped >= 1)."""
+        y_log = self.y_scaler.inverse_transform(y_scaled.reshape(-1, 1)).flatten()
+        y_raw = np.expm1(y_log)
+        return np.clip(y_raw, 1.0, None)
 
     def _load_train_data(self):
         """Load training data on demand and return (X_sparse, X_dense, y_raw)."""
@@ -325,10 +348,8 @@ class FLClient(fl.client.NumPyClient):
         X_train_sparse, X_train_dense, y_train_raw = self._load_train_data()
         n_samples = len(y_train_raw)
 
-        # ── Scale y for training ──
-        y_train_scaled = self.y_scaler.transform(
-            y_train_raw.reshape(-1, 1)
-        ).flatten()
+        # ── [Phase 5] log1p + scale y for training ──
+        y_train_scaled = self._transform_y(y_train_raw)
 
         # ── Step 1: Train deep models with FedProx proximal penalty (1 epoch) ──
         # [Phase 4 — FedProx] LSTM training with proximal term
@@ -410,10 +431,8 @@ class FLClient(fl.client.NumPyClient):
             y_pred_scaled = ensemble.predict(X_embeddings)
             del ensemble
 
-        # ── CRITICAL: Inverse transform to real story point scale ──
-        y_pred_raw = self.y_scaler.inverse_transform(
-            y_pred_scaled.reshape(-1, 1)
-        ).flatten()
+        # ── CRITICAL: [Phase 5] inverse scale + expm1 back to real story point scale ──
+        y_pred_raw = self._inverse_transform_y(y_pred_scaled)
 
         # ── Compute metrics on the REAL scale [1, 100] ──
         mae = mean_absolute_error(y_test_raw, y_pred_raw)
