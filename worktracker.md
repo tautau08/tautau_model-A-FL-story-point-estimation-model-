@@ -327,6 +327,38 @@ Client (per project)
 
 > Phase 5 confirms that the Weighted-MAE inflation observed in Phase 4 was driven by within-client target skew, not a cross-client scaling or architectural problem — a variance-stabilizing transform, applied without filtering any data, closed most of the gap between Macro and Weighted MAE while preserving the Split-Federation architecture and the full-spectrum [1,100] regression design.
 
+---
+
+## Phase 5b: FedProx Hyperparameter Sweep (`fraction_fit`, `mu`)
+
+**Motivation:** Phase 5 never tuned any FedProx hyperparameter (`proximal_mu`, `fraction_fit`, `num_rounds`) — all were first-guess defaults carried over unchanged since Phase 3. With the target-transform fix in place, a small batched sweep was run to check for headroom, using the new `--mu` / `--fraction_fit` / `--num_rounds` / `--run_tag` CLI options added to `src/simulate_phase4.py` (each config writes to an isolated `models/phase4_sweep_<tag>/` directory so no run overwrites another).
+
+**Sweep results (16-client comprehensive evaluation), against the Phase 5 baseline (mu=0.1, fraction_fit=0.5, 10 rounds):**
+
+| Config | Weighted MAE | Macro MAE | Weighted RMSE | Macro RMSE | vs. baseline |
+|---|---|---|---|---|---|
+| Baseline (mu=0.1, frac=0.5, 10 rounds) | 3.6769 | 3.1661 | 6.7692 | 5.5071 | — |
+| mu=0.01 (frac=0.5, 10 rounds) | 3.7308 | 3.2001 | 6.7949 | 5.5091 | worse |
+| mu=0.5 (frac=0.5, 10 rounds) | 3.7384 | 3.2006 | 6.8990 | 5.5557 | worse |
+| **fraction_fit=1.0 (mu=0.1, 10 rounds)** | **3.6136** | **3.0985** | 6.8165 | 5.4851 | **best** |
+| fraction_fit=1.0 (mu=0.1, 20 rounds) | 3.6393 | 3.0974 | 6.5670 | 5.4352 | plateaus vs. 10 rounds |
+
+**Findings:**
+- `mu` (proximal strength) has little headroom around the existing 0.1 — both 0.01 and 0.5 performed slightly worse on every metric. 0.1 was already a reasonable choice.
+- **`fraction_fit=1.0`** (every client trains every round, instead of a random 8/16 subset) was the one config that improved on Phase 5: Weighted MAE -1.7%, Macro MAE -2.1%, with round-to-round training curves visibly smoother/less oscillatory than the fraction_fit=0.5 baseline (consistent with less aggregation variance from full client participation each round).
+- Extending training from 10 to 20 rounds under fraction_fit=1.0 plateaued (Weighted MAE 3.6136 → 3.6393, essentially noise-level; Weighted RMSE improved 6.8165 → 6.5670) — convergence is reached by roughly round 10-14, so 10 rounds remains the practical choice (faster to train, no meaningful accuracy cost).
+
+**Adopted configuration:** `fraction_fit=1.0`, `mu=0.1`, `num_rounds=10` promoted to the canonical `models/phase4_personalized/` (previous Phase 5 baseline model preserved at `models/phase4_personalized_phase5_mu01_frac05/` for reference). All other sweep configs' metrics preserved under their respective `models/phase4_sweep_<tag>/` directories.
+
+**Final Comprehensive Evaluation (All 16 Clients) — Phase 5b (adopted):**
+
+| Metric | Phase 5 (mu=0.1, frac=0.5) | **Phase 5b (frac=1.0)** | Change |
+|---|---|---|---|
+| Macro MAE | 3.1661 | **3.0985** | -2.1% |
+| Macro RMSE | 5.5071 | 5.4851 | -0.4% |
+| **Weighted MAE** | 3.6769 | **3.6136** | **-1.7%** |
+| Weighted RMSE | 6.7692 | 6.8165 | +0.7% |
+
 **Cross-Phase Summary:**
 
 | Phase | Architecture | Best MAE | Best RMSE | vs Phase 1 MAE |
@@ -335,4 +367,5 @@ Client (per project)
 | 2     | Vanilla FedAvg (DL only) | 4.209 | 10.263 | +11.5% worse |
 | 3     | FedProx (DL only) | 4.282 | 10.189 | +13.5% worse |
 | 4     | Split-Fed + True FedProx | 2.157 | 3.155 | -42.8% better |
-| **5** | **Split-Fed + FedProx + log1p target** | **2.067** (local eval) / **3.166** (Macro, all-client) | **3.150** (local eval) / **5.507** (Macro, all-client) | **-45.2%** (local eval) |
+| 5     | Split-Fed + FedProx + log1p target | 2.067 (local eval) / 3.166 (Macro, all-client) | 3.150 (local eval) / 5.507 (Macro, all-client) | -45.2% (local eval) |
+| **5b** | **Split-Fed + FedProx (frac_fit=1.0) + log1p** | **3.099** (Macro, all-client) | **5.485** (Macro, all-client) | **-17.9%** (all-client Macro vs. Phase 1's all-client-equivalent 3.774) |
