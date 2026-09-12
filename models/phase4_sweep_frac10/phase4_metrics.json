@@ -1,0 +1,93 @@
+{
+  "architecture": "Split-Federation (Global DL + Local StackingRegressor)",
+  "strategy": "FedProx (mu=0.1)",
+  "fraction_fit": 1.0,
+  "num_clients": 16,
+  "num_rounds": 10,
+  "rounds": [
+    {
+      "round": 1,
+      "mae": 3.3272199290442472,
+      "rmse": 5.757958009076987,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 2,
+      "mae": 3.310326335987582,
+      "rmse": 5.739455557667659,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 3,
+      "mae": 3.2808249250015122,
+      "rmse": 5.697675413594977,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 4,
+      "mae": 3.223532862548322,
+      "rmse": 5.667676991372139,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 5,
+      "mae": 3.1907141617401678,
+      "rmse": 5.616381023948625,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 6,
+      "mae": 3.1821866976761237,
+      "rmse": 5.574089005729528,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 7,
+      "mae": 3.1455435754070202,
+      "rmse": 5.539409876181127,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 8,
+      "mae": 3.1298816658195068,
+      "rmse": 5.530076099291378,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 9,
+      "mae": 3.1146038243231544,
+      "rmse": 5.498431728817067,
+      "fit_clients": 16,
+      "eval_clients": 16
+    },
+    {
+      "round": 10,
+      "mae": 3.0984610713509206,
+      "rmse": 5.485118284551727,
+      "fit_clients": 16,
+      "eval_clients": 16
+    }
+  ],
+  "final": {
+    "round": 10,
+    "mae": 3.0984610713509206,
+    "rmse": 5.485118284551727,
+    "fit_clients": 16,
+    "eval_clients": 16
+  },
+  "best": {
+    "round": 10,
+    "mae": 3.0984610713509206,
+    "rmse": 5.485118284551727,
+    "fit_clients": 16,
+    "eval_clients": 16
+  }
+}
