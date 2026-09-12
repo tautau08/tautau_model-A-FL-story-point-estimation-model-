@@ -1,0 +1,93 @@
+{
+  "architecture": "Split-Federation (Global DL + Local StackingRegressor)",
+  "strategy": "FedProx (mu=0.01)",
+  "fraction_fit": 0.5,
+  "num_clients": 16,
+  "num_rounds": 10,
+  "rounds": [
+    {
+      "round": 1,
+      "mae": 3.6239071423699376,
+      "rmse": 6.457152567043401,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 2,
+      "mae": 3.672410782986699,
+      "rmse": 6.270765711234446,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 3,
+      "mae": 2.588768161344369,
+      "rmse": 3.8249790478867713,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 4,
+      "mae": 3.4846662721027775,
+      "rmse": 5.904550751858028,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 5,
+      "mae": 3.754990300743438,
+      "rmse": 6.970261870869816,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 6,
+      "mae": 2.5551727049354604,
+      "rmse": 3.8080003726927845,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 7,
+      "mae": 2.936419133316872,
+      "rmse": 5.064217823958858,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 8,
+      "mae": 3.4870837380697175,
+      "rmse": 6.641569549313209,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 9,
+      "mae": 3.180945654862546,
+      "rmse": 5.491257331289324,
+      "fit_clients": 8,
+      "eval_clients": 8
+    },
+    {
+      "round": 10,
+      "mae": 2.0818122031334205,
+      "rmse": 3.152014118943435,
+      "fit_clients": 8,
+      "eval_clients": 8
+    }
+  ],
+  "final": {
+    "round": 10,
+    "mae": 2.0818122031334205,
+    "rmse": 3.152014118943435,
+    "fit_clients": 8,
+    "eval_clients": 8
+  },
+  "best": {
+    "round": 10,
+    "mae": 2.0818122031334205,
+    "rmse": 3.152014118943435,
+    "fit_clients": 8,
+    "eval_clients": 8
+  }
+}
