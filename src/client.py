@@ -62,16 +62,27 @@ from src.CentralizedKhattab_phase1 import build_keras_lstm, sparse_to_dense_f32
 # ======================================================================
 
 class FLClient(fl.client.NumPyClient):
-    def __init__(self, client_id):
+    def __init__(self, client_id, model_dir=None):
+        """
+        Args:
+            client_id: client identifier (matches data/federated/client_{id}/)
+            model_dir: [Stage F sweep] base directory for this client's persisted
+                local ensemble + y_scaler. Defaults to PHASE4_MODEL_DIR (the
+                Phase 5 baseline location) so existing callers are unaffected;
+                pass a distinct path (e.g. models/phase4_sweep_<tag>/) to run an
+                isolated hyperparameter-sweep experiment without touching the
+                baseline artifacts.
+        """
         self.client_id = client_id
         self.client_dir = FEDERATED_DATA_DIR / f"client_{client_id}"
+        base_model_dir = model_dir if model_dir is not None else PHASE4_MODEL_DIR
 
         # Store paths — do NOT load data into RAM yet
         self.train_path = self.client_dir / "train.csv"
         self.test_path = self.client_dir / "test.csv"
 
         # ── Local ensemble persistence directory ──
-        self.local_model_dir = PHASE4_MODEL_DIR / f"client_{client_id}"
+        self.local_model_dir = base_model_dir / f"client_{client_id}"
         self.local_model_dir.mkdir(parents=True, exist_ok=True)
         self.ensemble_path = self.local_model_dir / "local_ensemble.joblib"
         self.scaler_path = self.local_model_dir / "y_scaler.joblib"

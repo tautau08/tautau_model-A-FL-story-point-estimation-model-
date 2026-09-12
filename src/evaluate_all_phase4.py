@@ -7,6 +7,7 @@ against the Phase 4 Split-Federation architecture:
   - Local Personalized StackingRegressor Ensembles
 """
 
+import argparse
 import os
 import sys
 import gc
@@ -47,10 +48,26 @@ def build_feature_extractor(model):
         x = layer(x)
     return tf.keras.Model(inputs=inp, outputs=x)
 
+def parse_args():
+    """[Stage F sweep] Optional --model-dir to evaluate a sweep run instead of
+    the Phase 5 baseline (models/phase4_personalized/)."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model-dir", type=str, default=None)
+    parser.add_argument("--out-name", type=str, default="phase4_evaluation_all.json")
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    model_dir = Path(args.model_dir) if args.model_dir else PHASE4_MODEL_DIR
+    global_mlp_path = model_dir / "global_mlp.keras"
+    global_lstm_path = model_dir / "global_lstm.keras"
+
     print("=" * 70)
     print(" Phase 4 Final Comprehensive Evaluation (16 Clients)")
     print(" Architecture: Split-Federation (Global DL + Local ML)")
+    if args.model_dir:
+        print(f" [Stage F sweep] model_dir={model_dir}")
     print("=" * 70)
     print("\n[+] Loading global assets...")
 
@@ -59,8 +76,8 @@ def main():
 
     # 2. Load Global Models
     tf.get_logger().setLevel("ERROR")
-    global_mlp = tf.keras.models.load_model(PHASE4_GLOBAL_MLP_PATH, compile=False)
-    global_lstm = tf.keras.models.load_model(PHASE4_GLOBAL_LSTM_PATH, compile=False)
+    global_mlp = tf.keras.models.load_model(global_mlp_path, compile=False)
+    global_lstm = tf.keras.models.load_model(global_lstm_path, compile=False)
 
     # Rebuild extractors
     mlp_ext = build_feature_extractor(global_mlp)
@@ -81,7 +98,7 @@ def main():
         client_dir = FEDERATED_DATA_DIR / f"client_{cid}"
         test_path = client_dir / "test.csv"
         
-        local_model_dir = PHASE4_MODEL_DIR / f"client_{cid}"
+        local_model_dir = model_dir / f"client_{cid}"
         ensemble_path = local_model_dir / "local_ensemble.joblib"
         scaler_path = local_model_dir / "y_scaler.joblib"
 
@@ -160,7 +177,7 @@ def main():
             "client_results": results
         }
         
-        eval_path = PHASE4_MODEL_DIR / "phase4_evaluation_all.json"
+        eval_path = model_dir / args.out_name
         with open(eval_path, "w") as f:
             json.dump(eval_metrics, f, indent=2)
         print(f"\n  Detailed JSON saved to: {eval_path}")

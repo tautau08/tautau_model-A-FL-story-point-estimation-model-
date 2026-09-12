@@ -9,6 +9,7 @@ Architecture: Personalized Federated Ensemble (Split-Federation)
 Runtime: Sequential single-process (Windows GPU safe)
 """
 
+import argparse
 import subprocess
 import sys
 import os
@@ -57,6 +58,22 @@ PROXIMAL_MU = 0.1        # [Phase 4 — FedProx] Proximal regularization strengt
 
 random.seed(RANDOM_STATE)
 np.random.seed(RANDOM_STATE)
+
+
+def parse_args():
+    """[Stage F sweep] CLI overrides for FedProx hyperparameter experiments.
+
+    Defaults match the Phase 5 baseline exactly. Passing --run_tag isolates
+    all artifacts (global models, per-client ensembles, metrics json) under
+    models/phase4_sweep_<run_tag>/ instead of the baseline
+    models/phase4_personalized/, so sweep runs never overwrite Phase 5.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mu", type=float, default=PROXIMAL_MU)
+    parser.add_argument("--fraction_fit", type=float, default=FRACTION_FIT)
+    parser.add_argument("--num_rounds", type=int, default=NUM_ROUNDS)
+    parser.add_argument("--run_tag", type=str, default="")
+    return parser.parse_args()
 
 
 # =====================================================================
@@ -113,12 +130,27 @@ def set_global_weights(mlp, lstm, params):
 # =====================================================================
 
 def main():
+    args = parse_args()
+    mu = args.mu
+    fraction_fit = args.fraction_fit
+    fraction_eval = args.fraction_fit  # kept equal to fraction_fit, matching original design
+    num_rounds = args.num_rounds
+
+    if args.run_tag:
+        model_dir = PHASE4_MODEL_DIR.parent / f"phase4_sweep_{args.run_tag}"
+    else:
+        model_dir = PHASE4_MODEL_DIR
+    model_dir.mkdir(parents=True, exist_ok=True)
+    metrics_path = model_dir / "phase4_metrics.json"
+
     print()
     print("=" * 60)
     print(" Federated Agile Effort Estimation")
     print(" Phase 4 -- Personalized Federated Ensemble")
     print(" Architecture: Split-Federation (Global DL + Local ML)")
     print(" Runtime: Sequential single-process (Windows GPU safe)")
+    if args.run_tag:
+        print(f" [Stage F sweep] run_tag={args.run_tag} -> {model_dir}")
     print("=" * 60)
 
     # -- Step 1: Partition data -----------------------------------------
@@ -141,11 +173,11 @@ def main():
     print(f"         MLP: {n_mlp_p:,} params  |  LSTM: {n_lstm_p:,} params")
 
     # -- Step 3: Configure ──────────────────────────────────────────────
-    n_fit = int(NUM_CLIENTS * FRACTION_FIT)
-    n_eval = int(NUM_CLIENTS * FRACTION_EVAL)
+    n_fit = int(NUM_CLIENTS * fraction_fit)
+    n_eval = int(NUM_CLIENTS * fraction_eval)
     print(f"\n  [3/4] Configuration:")
-    print(f"         FedProx (mu={PROXIMAL_MU}) + Split-Federation")
-    print(f"         {NUM_ROUNDS} rounds, {n_fit} clients/round (fit)")
+    print(f"         FedProx (mu={mu}) + Split-Federation")
+    print(f"         {num_rounds} rounds, {n_fit} clients/round (fit)")
     print(f"         {n_eval} clients/round (evaluate)")
 
     all_cids = list(range(NUM_CLIENTS))
@@ -158,19 +190,19 @@ def main():
     print(f"  {'─'*6:>6s}  {'─'*6:>6s}  {'─'*7:>7s}  "
           f"{'─'*10:>10s}  {'─'*10:>10s}")
 
-    for rnd in range(1, NUM_ROUNDS + 1):
+    for rnd in range(1, num_rounds + 1):
         # ── FIT PHASE ──────────────────────────────────────────────
         fit_cids = sorted(random.sample(all_cids, n_fit))
-        fit_results = []  
+        fit_results = []
 
         client_config = {
-            "proximal_mu": PROXIMAL_MU,
+            "proximal_mu": mu,
             "current_round": rnd
         }
 
         for cid in fit_cids:
             try:
-                client = FLClient(str(cid))
+                client = FLClient(str(cid), model_dir=model_dir)
                 updated_weights, n_samples, _ = client.fit(
                     global_params, config=client_config
                 )
@@ -199,7 +231,7 @@ def main():
 
         for cid in eval_cids:
             try:
-                client = FLClient(str(cid))
+                client = FLClient(str(cid), model_dir=model_dir)
                 loss, n_samples, metrics = client.evaluate(
                     global_params, config={}
                 )
@@ -258,32 +290,33 @@ def main():
         print(f"    MAE delta: {delta_mae:+.4f} ({pct_mae:+.1f}%)")
 
     # ── Save metrics ──
-    PHASE4_MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    model_dir.mkdir(parents=True, exist_ok=True)
     metrics_out = {
         "architecture": "Split-Federation (Global DL + Local StackingRegressor)",
-        "strategy": f"FedProx (mu={PROXIMAL_MU})",
+        "strategy": f"FedProx (mu={mu})",
+        "fraction_fit": fraction_fit,
         "num_clients": NUM_CLIENTS,
-        "num_rounds": NUM_ROUNDS,
+        "num_rounds": num_rounds,
         "rounds": round_metrics,
     }
     if round_metrics:
         metrics_out["final"] = round_metrics[-1]
         metrics_out["best"] = min(round_metrics, key=lambda x: x["mae"])
 
-    with open(PHASE4_METRICS_PATH, "w") as f:
+    with open(metrics_path, "w") as f:
         json.dump(metrics_out, f, indent=2)
-    print(f"\n  Metrics saved to {PHASE4_METRICS_PATH}")
+    print(f"\n  Metrics saved to {metrics_path}")
 
     # ── Save global models ──
-    global_mlp_path = PHASE4_MODEL_DIR / "global_mlp.keras"
-    global_lstm_path = PHASE4_MODEL_DIR / "global_lstm.keras"
+    global_mlp_path = model_dir / "global_mlp.keras"
+    global_lstm_path = model_dir / "global_lstm.keras"
     global_mlp.save(global_mlp_path)
     global_lstm.save(global_lstm_path)
     print(f"  Global MLP  → {global_mlp_path}")
     print(f"  Global LSTM → {global_lstm_path}")
 
-    print("\n  Local ensembles saved per-client at:")
-    print("    models/phase4_personalized/client_{cid}/local_ensemble.joblib")
+    print(f"\n  Local ensembles saved per-client at:")
+    print(f"    {model_dir}/client_{{cid}}/local_ensemble.joblib")
     print("=" * 60)
 
 
